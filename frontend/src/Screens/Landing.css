@@ -1,0 +1,42 @@
+
+.container {
+    text-align: center;
+    margin: 0 auto;
+    color: black;
+    height: 100vh;
+    max-width: 40rem;
+}
+
+.title {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+input[type=text], select, input[type=password] {
+  width: 80%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.landingPage__button{
+  width: 80%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.landingPage__button:hover {
+  background-color: #45a049;
+}
+
+.queueForm{
+    padding-top: 6rem;
+}

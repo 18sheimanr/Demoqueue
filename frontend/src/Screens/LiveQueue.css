@@ -1,0 +1,36 @@
+.queue__header{
+    /* height: 10vh; */
+    margin: 0;
+    padding: 1rem 0rem;
+
+    width: 100%;
+    left: 0;
+    top: 0;
+    /* background-color: var(--header-color); */
+    /* border-bottom: 1px solid black; */
+}
+
+.song__queue{
+    margin: 0;
+    height: 80vh;
+    scroll-behavior: smooth;
+    min-width: 100%;
+}
+
+.song__request--container{
+    background-color: gray;
+
+    width: 100%;
+
+    padding: 0rem;
+    margin: 0;
+    height: 7vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.song__request--text{
+    font-size: 30px;
+}

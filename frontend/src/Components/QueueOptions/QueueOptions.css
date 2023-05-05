@@ -1,0 +1,8 @@
+.QueueOptions{
+    display: flex;
+    justify-content: space-between;
+    /* background-color: var(--header-color); */
+    padding: 1rem;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+}

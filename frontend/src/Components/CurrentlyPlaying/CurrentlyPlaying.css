@@ -1,0 +1,73 @@
+.currentlyPlaying__container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  /* margin-left: 1rem; */
+}
+
+.currentlyPlaying__albumwork {
+  --image-size: 75px;
+
+  width: var(--image-size);
+  height: var(--image-size);
+  object-fit: cover;
+
+  margin-right: 1rem;
+
+  border-radius: 100%;
+  animation: spin 2s infinite linear;
+}
+
+.currentlyPlaying__albumworkName--container{
+  display: flex;
+  align-items: center;
+  margin-left: 1rem;
+}
+
+.currentlyPlaying__songInfo {
+    /* Styling */
+}
+
+.currentlyPlaying__songInfo--name {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.currentlyPlaying__songInfo--artist {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgb(140, 140, 140);
+}
+
+.currentlyPlaying__lockTimer{
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.lockTimer{
+    position:absolute;
+    right:0;
+
+    text-align: center;
+
+    width: 5rem;
+}
+
+.sessionCode{
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+}

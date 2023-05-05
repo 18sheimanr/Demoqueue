@@ -1,0 +1,12 @@
+html{
+    scroll-behavior: smooth;
+    background-color: #17072b;
+    color: white;
+}
+
+* {
+    margin: 0;
+    font-family: monaco, Consolas, Lucida Console, monospace !important;
+    --header-color:rgb(255, 255, 227);
+}
+
