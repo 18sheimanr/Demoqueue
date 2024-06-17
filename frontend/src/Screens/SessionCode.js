@@ -21,7 +21,7 @@ function SessionCode(props) {
   return (
     <div className='main'>
       <h1>Current Session Code</h1>
-      <button onClick={() => navigate("/queue?event_name="+event_name)}>Back</button>
+      <button onClick={() => navigate("/Demoqueue/queue?event_name="+event_name)}>Back</button>
       <div className="output-box">
         <img src={qrCode} alt="" />
         <a href={qrCode} download="QRCode">

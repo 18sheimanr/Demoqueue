@@ -14,7 +14,6 @@ from flask import Blueprint
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-bp = Blueprint('demoqueue-backend', __name__, url_prefix='/Demoqueue')
 
 app.config['SECRET_KEY'] = 'sadfsadfsadfadsfsafgr'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -49,5 +48,3 @@ def after_request(response):
 
 from routes import *
 from spotify_client import *
-
-app.register_blueprint(bp)

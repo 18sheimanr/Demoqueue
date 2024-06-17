@@ -53,13 +53,13 @@ function LandingPage() {
       <br />
       <button
         className="landingPage__button"
-        onClick={() => navigate("/authenticate")}
+        onClick={() => navigate("/Demoqueue/authenticate")}
       >
         Create Queue
       </button>
       <button
         className="landingPage__button"
-        onClick={() => navigate("/queue?event_name=DEMO")}
+        onClick={() => navigate("/Demoqueue/queue?event_name=DEMO")}
       >
         SEE DEMO
       </button>

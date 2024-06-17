@@ -34,7 +34,7 @@ class spotify_track():
         self.id = id
         self.uri = uri
 
-@bp.route("/spotify_webhook")
+@app.route("/spotify_webhook")
 def api_callback():
 
     auth_token = request.args['code']
@@ -59,7 +59,7 @@ def api_callback():
 
     return redirect("http://localhost:3000/create_event")
 
-@bp.route('/host_spotify_playlists', methods=['GET'])
+@app.route('/host_spotify_playlists', methods=['GET'])
 def get_user_playlists():
     token = session["spotify_token"]
     authorization_header = {"Authorization": "Bearer {}".format(token)}
@@ -107,7 +107,7 @@ def get_playlist_songs(playlist_spotify_id):
 
     return parsed_songs
 
-@bp.route('/currently_playing', methods=['GET'])
+@app.route('/currently_playing', methods=['GET'])
 def get_currently_playing_song_status():
     token = session["spotify_token"]
     authorization_header = {"Authorization": "Bearer {}".format(token)}
@@ -120,7 +120,7 @@ def get_currently_playing_song_status():
 
     return player_data
 
-@bp.route('/add_song_to_queue', methods=['POST'])
+@app.route('/add_song_to_queue', methods=['POST'])
 def add_song_to_queue():
     try:
         token = session["spotify_token"]
