@@ -6,7 +6,7 @@ import sys
 from flask import redirect, request, session
 from flask_login import login_required, logout_user, current_user, login_user
 
-from app import app, db, socketio, bp
+from app import app, db, socketio
 from flask_socketio import emit
 from models import Host, Event, Song
 from spotify_client import get_user_playlists, get_playlist_songs,get_currently_playing_song_status, spotify_track, clientId

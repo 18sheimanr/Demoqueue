@@ -4,7 +4,7 @@ import json
 from flask import redirect, session, request
 from pip._vendor import requests
 
-from app import app, bp
+from app import app
 
 clientId = "09be4ea5badf462fbe63a505c183c04d"
 clientSecret = "83243ddb2d5c44ebaef3ff58b233982b"

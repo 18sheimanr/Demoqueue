@@ -40,7 +40,7 @@ function LandingPage() {
           type="submit"
           onClick={() =>
             navigate(
-              "/queue?event_name=" +
+              "Demoqueue/queue?event_name=" +
                 document.getElementById("event_code_input").value
             )
           }
