@@ -15,8 +15,7 @@ app = Flask(__name__, static_url_path='', static_folder='./../front-end/src')
 bp = Blueprint('demoqueue-backend', __name__, url_prefix='/Demoqueue')
 
 app.config['SECRET_KEY'] = 'sadfsadfsadfadsfsafgr'
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-    'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 cors = CORS(app)

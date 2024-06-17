@@ -25,6 +25,7 @@ function LandingPage() {
   return (
     <div className="container">
       <h1 className="title">DEMOQUEUE.</h1>
+        <p style={{color: 'orange'}}>IN DEVELOPMENT, CONTACT ROBERT SHEIMAN FOR CREATE ACCOUNT ACCESS.</p>
 
       <form
         className="queueForm"
@@ -55,6 +56,12 @@ function LandingPage() {
         onClick={() => navigate("/authenticate")}
       >
         Create Queue
+      </button>
+      <button
+        className="landingPage__button"
+        onClick={() => navigate("/queue?event_name=DEMO")}
+      >
+        SEE DEMO
       </button>
       <br />
     </div>
