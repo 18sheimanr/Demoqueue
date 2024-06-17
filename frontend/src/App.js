@@ -21,12 +21,12 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="*" element={ <Navigate to="/home"/>} />
-          <Route path="/home" element={<LandingPage />} />
-          <Route path="/queue" element={<LiveQueue />} />
-          <Route path="/code" element={<SessionCode />} />
-          <Route path="/authenticate" element={<Authenticate />} />
-          <Route path="/create_event" element={<CreateEvent />} />
+          <Route path="*" element={ <Navigate to="/Demoqueue/home"/>} />
+          <Route path="/Demoqueue/home" element={<LandingPage />} />
+          <Route path="/Demoqueue/queue" element={<LiveQueue />} />
+          <Route path="/Demoqueue/code" element={<SessionCode />} />
+          <Route path="/Demoqueue/authenticate" element={<Authenticate />} />
+          <Route path="/Demoqueue/create_event" element={<CreateEvent />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

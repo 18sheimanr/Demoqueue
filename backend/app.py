@@ -1,3 +1,5 @@
+from gevent import monkey
+monkey.patch_all()
 import os
 
 from flask_migrate import Migrate
@@ -11,7 +13,7 @@ from flask import Blueprint
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-app = Flask(__name__, static_url_path='', static_folder='./../front-end/src')
+app = Flask(__name__)
 bp = Blueprint('demoqueue-backend', __name__, url_prefix='/Demoqueue')
 
 app.config['SECRET_KEY'] = 'sadfsadfsadfadsfsafgr'
@@ -21,8 +23,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 cors = CORS(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000")
-socketio.run(app)
+socketio = SocketIO(app, cors_allowed_origins="https://18sheimanr.github.io/")
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
