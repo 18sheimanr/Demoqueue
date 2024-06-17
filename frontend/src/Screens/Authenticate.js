@@ -20,7 +20,7 @@ function Authenticate() {
         Accept: "application/json",
       },
     };
-    fetch("https://demoqueue-server.herokuapp.com/login", requestOptions)
+    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -50,7 +50,7 @@ function Authenticate() {
         password: signupPasswordInput,
       }),
     };
-    fetch("https://demoqueue-server.herokuapp.com/sign_up", requestOptions)
+    fetch(`${process.env.BACKEND_BASE_URL}/sign_up`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -74,7 +74,7 @@ function Authenticate() {
         password: passwordInput,
       }),
     };
-    fetch("https://demoqueue-server.herokuapp.com/login", requestOptions)
+    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

@@ -6,20 +6,20 @@ import sys
 from flask import redirect, request, session
 from flask_login import login_required, logout_user, current_user, login_user
 
-from app import app, db, socketio
+from app import app, db, socketio, bp
 from flask_socketio import emit
 from models import Host, Event, Song
 from spotify_client import get_user_playlists, get_playlist_songs,get_currently_playing_song_status, spotify_track, clientId
 
 
-@app.route('/sign_out')
+@bp.route('/sign_out')
 @login_required
 def sign_out():
     logout_user()
     return {"success": True}, 200
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         user = Host.query.filter_by(username=request.json['username']).one()
@@ -54,7 +54,7 @@ def login():
         return {"authenticated": authenticated, "spotifyAuthorized": spotify_auth, "spotifyAuthLink": link}, 200
 
 
-@app.route('/sign_up', methods=['POST'])
+@bp.route('/sign_up', methods=['POST'])
 def sign_up():
     # TODO validate username and password
     try:
@@ -69,7 +69,7 @@ def sign_up():
     return {"username": user.username, "authenticated": current_user.is_authenticated}, 200
 
 
-@app.route('/create_event_queue', methods=['POST'])
+@bp.route('/create_event_queue', methods=['POST'])
 def create_event_queue():
     try:
         playlist_spotify_id = request.json['playlist_spotify_id']
@@ -87,7 +87,7 @@ def create_event_queue():
     return {"success": True, "event_name": event.name}
 
 
-@app.route('/event_songs', methods=['GET'])
+@bp.route('/event_songs', methods=['GET'])
 def event_songs():
     try:
         event = Event.query.filter_by(name=request.args['event_name']).one()

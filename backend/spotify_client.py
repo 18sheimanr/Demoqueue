@@ -4,8 +4,7 @@ import json
 from flask import redirect, session, request
 from pip._vendor import requests
 
-from app import app
-
+from app import app, bp
 
 clientId = "09be4ea5badf462fbe63a505c183c04d"
 clientSecret = "83243ddb2d5c44ebaef3ff58b233982b"
@@ -35,7 +34,7 @@ class spotify_track():
         self.id = id
         self.uri = uri
 
-@app.route("/spotify_webhook")
+@bp.route("/spotify_webhook")
 def api_callback():
 
     auth_token = request.args['code']
@@ -60,7 +59,7 @@ def api_callback():
 
     return redirect("http://localhost:3000/create_event")
 
-@app.route('/host_spotify_playlists', methods=['GET'])
+@bp.route('/host_spotify_playlists', methods=['GET'])
 def get_user_playlists():
     token = session["spotify_token"]
     authorization_header = {"Authorization": "Bearer {}".format(token)}
@@ -108,7 +107,7 @@ def get_playlist_songs(playlist_spotify_id):
 
     return parsed_songs
 
-@app.route('/currently_playing', methods=['GET'])
+@bp.route('/currently_playing', methods=['GET'])
 def get_currently_playing_song_status():
     token = session["spotify_token"]
     authorization_header = {"Authorization": "Bearer {}".format(token)}
@@ -121,7 +120,7 @@ def get_currently_playing_song_status():
 
     return player_data
 
-@app.route('/add_song_to_queue', methods=['POST'])
+@bp.route('/add_song_to_queue', methods=['POST'])
 def add_song_to_queue():
     try:
         token = session["spotify_token"]

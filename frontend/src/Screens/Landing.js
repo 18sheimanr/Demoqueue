@@ -14,7 +14,7 @@ function LandingPage() {
         Accept: "application/json",
       },
     };
-    fetch("https://demoqueue-server.herokuapp.com/sign_out", requestOptions)
+    fetch(`${process.env.BACKEND_BASE_URL}/sign_out`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

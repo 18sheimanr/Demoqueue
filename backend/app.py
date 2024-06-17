@@ -6,11 +6,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_cors import CORS
 from flask_socketio import SocketIO
+from flask import Blueprint
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__, static_url_path='', static_folder='./../front-end/src')
+bp = Blueprint('demoqueue-backend', __name__, url_prefix='/Demoqueue')
 
 app.config['SECRET_KEY'] = 'sadfsadfsadfadsfsafgr'
 app.config['SQLALCHEMY_DATABASE_URI'] =\
@@ -47,3 +49,5 @@ def after_request(response):
 
 from routes import *
 from spotify_client import *
+
+app.register_blueprint(bp)

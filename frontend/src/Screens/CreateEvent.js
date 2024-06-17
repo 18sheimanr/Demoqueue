@@ -20,7 +20,7 @@ function CreateEvent() {
         Accept: "application/json",
       },
     };
-    fetch("https://demoqueue-server.herokuapp.com/login", requestOptions)
+    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -42,7 +42,7 @@ function CreateEvent() {
       },
     };
     fetch(
-      "https://demoqueue-server.herokuapp.com/host_spotify_playlists",
+      `${process.env.BACKEND_BASE_URL}/host_spotify_playlists`,
       requestOptions
     )
       .then((res) => res.json())
@@ -67,7 +67,7 @@ function CreateEvent() {
       body: JSON.stringify({ playlist_spotify_id: selectedPlaylist }),
     };
     fetch(
-      "https://demoqueue-server.herokuapp.com/create_event_queue",
+      `${process.env.BACKEND_BASE_URL}/create_event_queue`,
       requestOptions
     )
       .then((res) => res.json())
