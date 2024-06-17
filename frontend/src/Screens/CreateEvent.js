@@ -25,7 +25,7 @@ function CreateEvent() {
       .then((data) => {
         console.log(data);
         if (!data.authenticated || !data.spotifyAuthorized) {
-          navigate("/Demoqueue/authenticate");
+          navigate(`${process.env.REACT_APP_FRONTEND_URL}/authenticate`);
         } else {
           getSpotifyPlaylists();
         }
@@ -75,7 +75,7 @@ function CreateEvent() {
         console.log(data);
         if (data.success) {
           localStorage.setItem("admin", true);
-          navigate("/Demoqueue/queue?event_name=" + data.event_name);
+          navigate(`${process.env.REACT_APP_FRONTEND_URL}/queue?event_name=` + data.event_name);
         }
       });
   }

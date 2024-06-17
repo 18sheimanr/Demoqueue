@@ -37,13 +37,13 @@ function LandingPage() {
         <input type="text" id="event_code_input" placeholder="Event Code" />
         <button
           className="landingPage__button"
-          type="submit"
-          onClick={() =>
+          onSubmit={(e) => {
+            e.preventDefault();
             navigate(
               "Demoqueue/queue?event_name=" +
                 document.getElementById("event_code_input").value
-            )
-          }
+            );
+          }}
         >
           Join Queue
         </button>
@@ -53,13 +53,13 @@ function LandingPage() {
       <br />
       <button
         className="landingPage__button"
-        onClick={() => navigate("/Demoqueue/authenticate")}
+        onClick={() => navigate(`${process.env.REACT_APP_FRONTEND_URL}/authenticate`)}
       >
         Create Queue
       </button>
       <button
         className="landingPage__button"
-        onClick={() => navigate("/Demoqueue/queue?event_name=DEMO")}
+        onClick={() => navigate(`${process.env.REACT_APP_FRONTEND_URL}/queue?event_name=DEMO`)}
       >
         SEE DEMO
       </button>

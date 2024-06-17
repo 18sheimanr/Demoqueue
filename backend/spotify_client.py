@@ -57,7 +57,7 @@ def api_callback():
     session["spotify_refresh_token"] = refresh_token
     session["spotify_token_expires"] = datetime.datetime.now() + datetime.timedelta(seconds=int(expires_in))
 
-    return redirect("http://localhost:3000/create_event")
+    return redirect("/create_event")
 
 @app.route('/host_spotify_playlists', methods=['GET'])
 def get_user_playlists():
