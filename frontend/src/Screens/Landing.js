@@ -14,7 +14,7 @@ function LandingPage() {
         Accept: "application/json",
       },
     };
-    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/sign_out`, requestOptions)
+    fetch(`${process.env.BACKEND_BASE_URL}/sign_out`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
