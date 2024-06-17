@@ -19,7 +19,7 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
+      <BrowserRouter basename="/Demoqueue">
         <Routes>
           <Route path="*" element={ <Navigate to="/Demoqueue/home"/>} />
           <Route path="/Demoqueue/home" element={<LandingPage />} />
