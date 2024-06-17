@@ -22,10 +22,7 @@ def sign_out():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        try:
-            user = Host.query.filter_by(username=request.json['username']).one()
-        except Exception as e:
-            return {"User not found": str(e)}, 401
+        user = Host.query.filter_by(username=request.json['username']).one()
         if user.verify_password(request.json['password']):
             login_user(user)
             return {"authenticated": current_user.is_authenticated}, 200

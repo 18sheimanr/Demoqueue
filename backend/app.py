@@ -23,10 +23,10 @@ def create_app():
   app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
-  cors = CORS(app, origins=["https://18sheimanr.github.io"])
+  cors = CORS(app)
   db = SQLAlchemy(app)
   migrate = Migrate(app, db)
-  socketio = SocketIO(app, cors_allowed_origins="https://18sheimanr.github.io")
+  socketio = SocketIO(app, cors_allowed_origins="https://18sheimanr.github.io/")
 
   login_manager = LoginManager()
   login_manager.session_protection = 'strong'
@@ -44,7 +44,8 @@ def create_app():
   # Fixes CORS issue to allow for credentials to be sent from front end
   @app.after_request
   def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'https://18sheimanr.github.io')
+    response.headers.add('Access-Control-Allow-Origin', 'https://18sheimanr.github.io/')
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')

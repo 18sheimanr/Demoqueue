@@ -26,7 +26,7 @@ function Authenticate() {
         console.log(data);
         if (data.authenticated) {
           data.spotifyAuthorized
-            ? navigate(`${process.env.REACT_APP_FRONTEND_URL}/create_event`)
+            ? navigate("/Demoqueue/create_event")
             : window.location.replace(data.spotifyAuthLink);
         }
       });
