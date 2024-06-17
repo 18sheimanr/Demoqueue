@@ -20,13 +20,13 @@ function Authenticate() {
         Accept: "application/json",
       },
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/login`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         if (data.authenticated) {
           data.spotifyAuthorized
-            ? navigate("/Demoqueue/create_event")
+            ? navigate("/create_event")
             : window.location.replace(data.spotifyAuthLink);
         }
       });
@@ -50,7 +50,7 @@ function Authenticate() {
         password: signupPasswordInput,
       }),
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/sign_up`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/sign_up`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -74,7 +74,7 @@ function Authenticate() {
         password: passwordInput,
       }),
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/login`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);

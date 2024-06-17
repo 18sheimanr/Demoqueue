@@ -14,7 +14,7 @@ function LandingPage() {
         Accept: "application/json",
       },
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/sign_out`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/sign_out`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -53,13 +53,13 @@ function LandingPage() {
       <br />
       <button
         className="landingPage__button"
-        onClick={() => navigate("/Demoqueue/authenticate")}
+        onClick={() => navigate("/authenticate")}
       >
         Create Queue
       </button>
       <button
         className="landingPage__button"
-        onClick={() => navigate("/Demoqueue/queue?event_name=DEMO")}
+        onClick={() => navigate("/queue?event_name=DEMO")}
       >
         SEE DEMO
       </button>

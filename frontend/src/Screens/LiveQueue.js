@@ -11,7 +11,7 @@ import "./LiveQueue.css";
 import io from "socket.io-client";
 import axios from "axios";
 
-let socket = io.connect(`${process.env.BACKEND_BASE_URL}`);
+let socket = io.connect(`${process.env.REACT_APP_BACKEND_BASE_URL}`);
 
 function LiveQueue() {
   const [currentSong, setCurrentSong] = useState({});
@@ -44,7 +44,7 @@ function LiveQueue() {
       },
     };
     fetch(
-      `${process.env.BACKEND_BASE_URL}/event_songs?event_name=` +
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/event_songs?event_name=` +
         event_name,
       requestOptions
     )
@@ -75,7 +75,7 @@ function LiveQueue() {
       },
     };
     fetch(
-      `${process.env.BACKEND_BASE_URL}/currently_playing`,
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/currently_playing`,
       requestOptions
     )
       .then((res) => res.json())
@@ -100,7 +100,7 @@ function LiveQueue() {
               console.log("adding", queue[0]);
               axios
                 .post(
-                  `${process.env.BACKEND_BASE_URL}/add_song_to_queue`,
+                  `${process.env.REACT_APP_BACKEND_BASE_URL}/add_song_to_queue`,
                   { spotify_uri: queue[0].spotify_id },
                   requestOptions
                 )
