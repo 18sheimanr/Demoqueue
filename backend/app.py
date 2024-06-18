@@ -11,24 +11,33 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = None
 db = SQLAlchemy()
 socketio = None
+application = None
+
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+@login_manager.user_loader
+def load_user(user_id):
+  from models import Host
+  return Host.query.get(int(user_id))
 
 def create_app():
   global app
   global db
   global socketio
+  global application
   app = Flask(__name__)
 
   app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
   app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+  app.config["SESSION_COOKIE_SECURE"] = True
+  app.config["SESSION_COOKIE_SAMESITE"] = 'None'
 
-  cors = CORS(app, origins=["https://18sheimanr.github.io"])
+  cors = CORS(app, origins=[os.getenv("FRONTEND_ORIGIN")], supports_credentials=True)
   db = SQLAlchemy(app)
   migrate = Migrate(app, db)
-  socketio = SocketIO(app, cors_allowed_origins="https://18sheimanr.github.io")
+  socketio = SocketIO(app, cors_allowed_origins=os.getenv("FRONTEND_ORIGIN"), supports_credentials=True)
 
-  login_manager = LoginManager()
-  login_manager.session_protection = 'strong'
   login_manager.init_app(app)
   # login_manager.login_view = 'auth.login'
 
@@ -36,15 +45,10 @@ def create_app():
 
   db.create_all()
 
-  @login_manager.user_loader
-  def load_user(user_id):
-      from models import Host
-      return Host.query.get(int(user_id))
-
   # Fixes CORS issue to allow for credentials to be sent from front end
   @app.after_request
   def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', 'https://18sheimanr.github.io')
+    response.headers.add('Access-Control-Allow-Origin', os.getenv("FRONTEND_ORIGIN"))
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')

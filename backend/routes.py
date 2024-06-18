@@ -39,7 +39,7 @@ def login():
 
             spotify_auth = False
             auth_endpoint = "https://accounts.spotify.com/authorize"
-            redirect_uri = "http://localhost:8082/spotify_webhook"
+            redirect_uri = "https://demoqueue-backend-prod-1318dfee85cf.herokuapp.com/spotify_webhook"
 
             scopes = [
                 "user-read-currently-playing",
@@ -93,7 +93,7 @@ def event_songs():
         event = Event.query.filter_by(name=request.args['event_name']).one()
         songs = Song.query.join(Event, event.id == Song.event_id).all()
     except Exception as e:
-        return {"error": str(e)}, 200
+        return {"error": str(e)}, 400
 
     return {"songs": [{"name": song.name, "artist": song.artist, "id": song.id, "votes": song.rating,"spotify_id":song.spotify_id} for song in songs]}
 

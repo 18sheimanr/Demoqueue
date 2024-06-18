@@ -27,9 +27,21 @@ config.set_main_option('sqlalchemy.url', os.getenv('DATABASE_URL'))
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app import create_app, db
+from app.models import Event, Song
 app = create_app()  # Create the Flask app instance
 app.app_context().push()  # Push the app context
 target_metadata = db.metadata
+
+def seed_database():
+    demo_event = Event(name="DEMO")
+    db.session.add(demo_event)
+    db.session.commit()
+
+    songs = ["Livin' on a prayer", "Don't stop believing", "Sweet Caroline", "Bohemian Rhapsody", "Mr. Brightside"]
+    for i in range(5):
+        song = Song(spotify_id=f"song{i}", name=f"{songs[i]}", artist=f"Artist {i}", rating={i}, event_id=demo_event.id)
+        db.session.add(song)
+    db.session.commit()
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -91,6 +103,7 @@ def run_migrations_online():
 
         with context.begin_transaction():
             context.run_migrations()
+    seed_database()
 
 
 if context.is_offline_mode():

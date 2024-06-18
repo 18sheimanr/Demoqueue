@@ -10,7 +10,6 @@ function QueueOptions(props) {
 
   const [addSongsOpen, setAddSongsOpen] = useState(false);
   const [inputText, setInputText] = useState("");
-  const [songList, setSongList] = useState([])
   const handleOpen = () => setAddSongsOpen(true);
   const handleClose = () => setAddSongsOpen(false);
   
@@ -18,31 +17,9 @@ function QueueOptions(props) {
     let lowerCase = e.target.value.toLowerCase();
     setInputText(lowerCase);
   };
-
-  useEffect(() => {
-    const requestOptions = {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    };
-    fetch(
-      `${process.env.REACT_APP_BACKEND_BASE_URL}/event_songs?event_name=` + props.event_name,
-      requestOptions
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        // console.log("Got all songs from API", data.songs);
-        // console.log(data.songs[0]);
-        console.log(data.songs);
-        setSongList(data.songs);
-      });
-  }, [])
   
 
-  const filteredData = songList.filter((song) => {
+  const filteredData = props.songList.filter((song) => {
     if (inputText === "") return song;
 
     return (
