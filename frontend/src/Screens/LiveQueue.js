@@ -87,8 +87,8 @@ function LiveQueue() {
     )
       .then((res) => res.json())
       .then((data) => {
-        if (data.no_playback) {
-          console.log("no playback");
+        if (data.no_playback || !data) {
+          console.log("no playback or no data");
         } else {
           setSongProgress(data.progress_ms / 1000);
           setSongDuration(data.item.duration_ms / 1000);
@@ -126,8 +126,7 @@ function LiveQueue() {
         }
       })
       .catch((error) => {
-        console.log("error", error);
-        setIsErrorState(true);
+        console.log("Can't load currently playing song", error);
       });
   };
 

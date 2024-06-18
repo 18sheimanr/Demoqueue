@@ -27,19 +27,24 @@ config.set_main_option('sqlalchemy.url', os.getenv('DATABASE_URL'))
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app import create_app, db
-from app.models import Event, Song
+from models import Event, Song
 app = create_app()  # Create the Flask app instance
 app.app_context().push()  # Push the app context
 target_metadata = db.metadata
 
 def seed_database():
+    demo_event = Event.query.filter_by(name="DEMO").first()
+    # If it exists, delete it
+    if demo_event:
+        db.session.delete(demo_event)
+        db.session.commit()
+
     demo_event = Event(name="DEMO")
     db.session.add(demo_event)
     db.session.commit()
-
     songs = ["Livin' on a prayer", "Don't stop believing", "Sweet Caroline", "Bohemian Rhapsody", "Mr. Brightside"]
     for i in range(5):
-        song = Song(spotify_id=f"song{i}", name=f"{songs[i]}", artist=f"Artist {i}", rating={i}, event_id=demo_event.id)
+        song = Song(spotify_id=f"song{i}", name=f"{songs[i]}", artist=f"Artist {i}", rating=i, event_id=demo_event.id)
         db.session.add(song)
     db.session.commit()
 
