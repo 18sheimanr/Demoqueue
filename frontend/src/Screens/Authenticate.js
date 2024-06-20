@@ -10,6 +10,7 @@ function Authenticate() {
   const [signupUsernameInput, setSignupUsernameInput] = useState("");
   const [signupPasswordInput, setSignupPasswordInput] = useState("");
   const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
+  const [errorState, setErrorState] = useState('');
 
   useEffect(() => {
     const requestOptions = {
@@ -21,7 +22,14 @@ function Authenticate() {
       },
     };
     fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/login`, requestOptions)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok && res.status === 400) {
+          return res.json().then((data) => {
+            setErrorState(data.error.message);
+          });
+        }
+        return res.json();
+      })
       .then((data) => {
         console.log(data);
         if (data.authenticated) {
@@ -131,6 +139,7 @@ function Authenticate() {
   return (
     <div className="container">
       <h1 className="title">SIGN UP AS AN EVENT HOST.</h1>
+      {errorState && <p className="error">{errorState}</p>}
       {signUpForm}
       <br />
       <h2>OR</h2>
