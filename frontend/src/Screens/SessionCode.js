@@ -9,13 +9,12 @@ function SessionCode(props) {
   let search = window.location.search;
   let params = new URLSearchParams(search);
   let event_name = params.get('event_name');
-  const baseURL = "http://localhost:3000"
 
   useEffect(() => {
-      const eventURL = baseURL + event_name
+      const eventURL = `${process.env.REACT_APP_FRONTEND_BASE_URL}/queue?event_name=` + event_name
     setQrCode
  (`http://api.qrserver.com/v1/create-qr-code/?data=${eventURL}!&size=${size}x${size}`);
-  }, [size]);
+  }, [event_name, size]);
 
   const navigate = useNavigate();
   return (

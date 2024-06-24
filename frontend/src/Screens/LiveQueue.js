@@ -28,6 +28,8 @@ function LiveQueue() {
   const [isErrorState, setIsErrorState] = useState(false);
   const navigate = useNavigate();
 
+  const defaultAlbumArtworkURL = "https://static.vecteezy.com/system/resources/thumbnails/002/249/673/small/music-note-icon-song-melody-tune-flat-symbol-free-vector.jpg";
+
   const handleToastOpen = () => setToastOpen(true);
   const handleToastClose = (event, reason) => {
     if (reason === "clickaway") return;
@@ -89,6 +91,7 @@ function LiveQueue() {
       .then((data) => {
         if (data.no_playback || !data) {
           console.log("no playback or no data");
+          updateCurrentlyPlaying("Please play this playlist from your Spotify account!", "Nothing playing", defaultAlbumArtworkURL);
         } else {
           setSongProgress(data.progress_ms / 1000);
           setSongDuration(data.item.duration_ms / 1000);
@@ -212,8 +215,7 @@ function LiveQueue() {
     setCurrentSong({
       name: "",
       artist: "",
-      albumWorkURL:
-        "https://static.vecteezy.com/system/resources/thumbnails/002/249/673/small/music-note-icon-song-melody-tune-flat-symbol-free-vector.jpg",
+      albumWorkURL: defaultAlbumArtworkURL,
     });
     getCurrentlyPlayingSong();
     loadPlaylistSongs();

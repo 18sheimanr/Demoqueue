@@ -40,7 +40,7 @@ def login():
 
             spotify_auth = False
             auth_endpoint = "https://accounts.spotify.com/authorize"
-            redirect_uri = os.getenv("BACKEND_URL") + "/spotify_webhook"
+            redirect_uri = os.getenv("BASE_URL") + "/spotify_webhook"
 
             scopes = [
                 "user-read-currently-playing",

@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateEvent.css";
 import PlaylistCard from "./../Components/PlaylistCard/PlaylistCard";
+import {Box, CircularProgress} from "@material-ui/core";
 
 function CreateEvent() {
   // get list of playlists from API here
   const [selectedPlaylist, setSelectedPlaylist] = useState("");
-  const [hostPlaylists, setHostPlaylists] = useState([
-    { name: "Playlist", id: "xxxxx", image_url: "imgurl" },
-  ]);
+  const [hostPlaylists, setHostPlaylists] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,17 +82,24 @@ function CreateEvent() {
   return (
     <div className="container">
       <h1 className="title">SELECT A PLAYLIST.</h1>
-      <div className="createEvent__playlistCards">
-        {hostPlaylists.map((playlist) => (
-          <PlaylistCard
-            name={playlist.name}
-            playlistArtURL={playlist.image_url}
-            playlistId={playlist.id}
-            onSelect={showConfirmButton}
-            selected={playlist.id === selectedPlaylist}
-          />
-        ))}
-      </div>
+      {hostPlaylists === null ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <div className="createEvent__playlistCards">
+          {hostPlaylists.map((playlist) => (
+            <PlaylistCard
+              key={playlist.id}
+              name={playlist.name}
+              playlistArtURL={playlist.image_url}
+              playlistId={playlist.id}
+              onSelect={showConfirmButton}
+              selected={playlist.id === selectedPlaylist}
+            />
+          ))}
+        </div>
+      )}
       {selectedPlaylist.length > 1 ? (
         <button
           className="createEvent__confirmButton"

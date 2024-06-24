@@ -25,7 +25,7 @@ function Authenticate() {
       .then((res) => {
         if (!res.ok && res.status === 400) {
           return res.json().then((data) => {
-            setErrorState(data.error.message);
+            setErrorState(data.error);
           });
         }
         return res.json();
