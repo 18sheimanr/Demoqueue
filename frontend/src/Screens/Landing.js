@@ -1,9 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import "./Landing.css";
 
 function LandingPage() {
   const navigate = useNavigate();
+  const [error, setError] = useState(false);
 
   function logout() {
     const requestOptions = {
@@ -14,7 +15,7 @@ function LandingPage() {
         Accept: "application/json",
       },
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/sign_out`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/sign_out`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -31,18 +32,22 @@ function LandingPage() {
         className="queueForm"
         onSubmit={(e) => {
           e.preventDefault();
-          console.log(e);
         }}
       >
+        {error && <p>Please enter an event code.</p>}
         <input type="text" id="event_code_input" placeholder="Event Code" />
         <button
           className="landingPage__button"
           type="submit"
-          onClick={() =>
-            navigate(
-              "Demoqueue/queue?event_name=" +
-                document.getElementById("event_code_input").value
-            )
+          onClick={() => {
+              const eventName = document.getElementById("event_code_input").value;
+              if (eventName.trim() === '') {
+                setError(true);
+              } else {
+                setError(false);
+                navigate("/queue?event_name=" + eventName);
+              }
+            }
           }
         >
           Join Queue
@@ -53,13 +58,13 @@ function LandingPage() {
       <br />
       <button
         className="landingPage__button"
-        onClick={() => navigate("/Demoqueue/authenticate")}
+        onClick={() => navigate("/authenticate")}
       >
         Create Queue
       </button>
       <button
         className="landingPage__button"
-        onClick={() => navigate("/Demoqueue/queue?event_name=DEMO")}
+        onClick={() => navigate("/queue?event_name=DEMO")}
       >
         SEE DEMO
       </button>

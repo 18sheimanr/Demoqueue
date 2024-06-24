@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://18sheimanr.github.io/Demoqueue",
+  "homepage": "https://demoqueue-frontend-prod-f85ebc8967c0.herokuapp.com",
   "dependencies": {
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
@@ -20,15 +20,16 @@
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
     "socket.io-client": "^4.4.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "serve": "^14.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "serve -s build",
+    "deploy-prod": "cd .. && git push heroku `git subtree split --prefix frontend HEAD`:master"
   },
   "eslintConfig": {
     "extends": [

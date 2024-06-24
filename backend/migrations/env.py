@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
 import logging
+import os
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -17,15 +18,35 @@ config = context.config
 fileConfig(config.config_file_name)
 logger = logging.getLogger('alembic.env')
 
+config.set_main_option('sqlalchemy.url', os.getenv('DATABASE_URL'))
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from flask import current_app
-config.set_main_option(
-    'sqlalchemy.url',
-    str(current_app.extensions['migrate'].db.engine.url).replace('%', '%%'))
-target_metadata = current_app.extensions['migrate'].db.metadata
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from app import create_app, db
+from models import Event, Song
+app = create_app()  # Create the Flask app instance
+app.app_context().push()  # Push the app context
+target_metadata = db.metadata
+
+def seed_database():
+    demo_event = Event.query.filter_by(name="DEMO").first()
+    # If it exists, delete it
+    if demo_event:
+        db.session.delete(demo_event)
+        db.session.commit()
+
+    demo_event = Event(name="DEMO")
+    db.session.add(demo_event)
+    db.session.commit()
+    songs = ["Livin' on a prayer", "Don't stop believing", "Sweet Caroline", "Bohemian Rhapsody", "Mr. Brightside"]
+    for i in range(5):
+        song = Song(spotify_id=f"song{i}", name=f"{songs[i]}", artist=f"Artist {i}", rating=i, event_id=demo_event.id)
+        db.session.add(song)
+    db.session.commit()
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -82,12 +103,12 @@ def run_migrations_online():
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
-            process_revision_directives=process_revision_directives,
-            **current_app.extensions['migrate'].configure_args
+            process_revision_directives=process_revision_directives
         )
 
         with context.begin_transaction():
             context.run_migrations()
+    seed_database()
 
 
 if context.is_offline_mode():

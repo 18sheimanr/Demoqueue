@@ -1,4 +1,5 @@
 import datetime
+import os
 import random
 import string
 import sys
@@ -39,7 +40,7 @@ def login():
 
             spotify_auth = False
             auth_endpoint = "https://accounts.spotify.com/authorize"
-            redirect_uri = "http://localhost:8082/spotify_webhook"
+            redirect_uri = os.getenv("BASE_URL") + "/spotify_webhook"
 
             scopes = [
                 "user-read-currently-playing",
@@ -56,10 +57,15 @@ def login():
 
 @app.route('/sign_up', methods=['POST'])
 def sign_up():
-    # TODO validate username and password
+    username = request.json['username']
+    password = request.json['password']
+    user = Host.query.filter_by(username=username).first()
+    if user:
+        return {"error": "Username already exists"}, 400
+    if len(password) < 8:
+        return {"error": "Password must be at least 8 characters long"}, 400
     try:
-        user = Host(username=request.json['username'],
-                    password=request.json['password'])
+        user = Host(username=username, password=password)
         db.session.add(user)
         db.session.commit()
     except Exception as e:
@@ -93,7 +99,7 @@ def event_songs():
         event = Event.query.filter_by(name=request.args['event_name']).one()
         songs = Song.query.join(Event, event.id == Song.event_id).all()
     except Exception as e:
-        return {"error": str(e)}, 200
+        return {"error": str(e)}, 400
 
     return {"songs": [{"name": song.name, "artist": song.artist, "id": song.id, "votes": song.rating,"spotify_id":song.spotify_id} for song in songs]}
 

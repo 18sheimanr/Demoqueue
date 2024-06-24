@@ -34,3 +34,14 @@
 .song__request--text{
     font-size: 30px;
 }
+
+.error_message{
+    padding-top: 10rem;
+    color: white;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.error_message Button {
+    margin-top: 30px;
+}

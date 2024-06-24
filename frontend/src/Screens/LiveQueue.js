@@ -1,4 +1,4 @@
-import { Snackbar } from "@material-ui/core";
+import {Button, Snackbar} from "@material-ui/core";
 import { Alert } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import CurrentlyPlaying from "../Components/CurrentlyPlaying/CurrentlyPlaying";
@@ -10,8 +10,9 @@ import sortAndReturnNumerically, {
 import "./LiveQueue.css";
 import io from "socket.io-client";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
-let socket = io.connect(`${process.env.BACKEND_BASE_URL}`);
+let socket = io.connect(`${process.env.REACT_APP_BACKEND_BASE_URL}`);
 
 function LiveQueue() {
   const [currentSong, setCurrentSong] = useState({});
@@ -24,6 +25,11 @@ function LiveQueue() {
   );
   const [sortedByRank, setSortedByRank] = useState(true);
   const [toastOpen, setToastOpen] = useState(false);
+  const [isErrorState, setIsErrorState] = useState(false);
+  const navigate = useNavigate();
+
+  const defaultAlbumArtworkURL = "https://static.vecteezy.com/system/resources/thumbnails/002/249/673/small/music-note-icon-song-melody-tune-flat-symbol-free-vector.jpg";
+
   const handleToastOpen = () => setToastOpen(true);
   const handleToastClose = (event, reason) => {
     if (reason === "clickaway") return;
@@ -44,7 +50,7 @@ function LiveQueue() {
       },
     };
     fetch(
-      `${process.env.BACKEND_BASE_URL}/event_songs?event_name=` +
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/event_songs?event_name=` +
         event_name,
       requestOptions
     )
@@ -62,6 +68,9 @@ function LiveQueue() {
           });
         });
         sortQueue(song_list);
+      })
+      .catch((error) => {
+        setIsErrorState(true);
       });
   };
 
@@ -75,13 +84,14 @@ function LiveQueue() {
       },
     };
     fetch(
-      `${process.env.BACKEND_BASE_URL}/currently_playing`,
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/currently_playing`,
       requestOptions
     )
       .then((res) => res.json())
       .then((data) => {
-        if (data.no_playback) {
-          console.log("no playback");
+        if (data.no_playback || !data) {
+          console.log("no playback or no data");
+          updateCurrentlyPlaying("Please play this playlist from your Spotify account!", "Nothing playing", defaultAlbumArtworkURL);
         } else {
           setSongProgress(data.progress_ms / 1000);
           setSongDuration(data.item.duration_ms / 1000);
@@ -100,7 +110,7 @@ function LiveQueue() {
               console.log("adding", queue[0]);
               axios
                 .post(
-                  `${process.env.BACKEND_BASE_URL}/add_song_to_queue`,
+                  `${process.env.REACT_APP_BACKEND_BASE_URL}/add_song_to_queue`,
                   { spotify_uri: queue[0].spotify_id },
                   requestOptions
                 )
@@ -117,6 +127,9 @@ function LiveQueue() {
             data.item.album.images[0].url
           );
         }
+      })
+      .catch((error) => {
+        console.log("Can't load currently playing song", error);
       });
   };
 
@@ -202,11 +215,10 @@ function LiveQueue() {
     setCurrentSong({
       name: "",
       artist: "",
-      albumWorkURL:
-        "https://static.vecteezy.com/system/resources/thumbnails/002/249/673/small/music-note-icon-song-melody-tune-flat-symbol-free-vector.jpg",
+      albumWorkURL: defaultAlbumArtworkURL,
     });
     getCurrentlyPlayingSong();
-    // loadPlaylistSongs();
+    loadPlaylistSongs();
   }, []);
 
   return (
@@ -227,24 +239,34 @@ function LiveQueue() {
         toggleSortType={toggleSortType}
         addSongToQueue={addSongToQueue}
         event_name={event_name}
+        songList={songsInQueue}
       />
 
-      <div className="song__queue">
-        {songsInQueue.map((song, index) => (
-          <SongSuggestion
-            key={`${song.name} ${song.artist}`}
-            isAdmin={isAdmin}
-            name={song.name}
-            id={song.id}
-            artist={song.artist}
-            votes={song.votes}
-            index={index}
-            upVote={upVote}
-            downVote={downVote}
-            deleteSuggestion={deleteSuggestion}
-          />
-        ))}
-      </div>
+      {!isErrorState ? (
+        <div className="song__queue">
+          {songsInQueue.map((song, index) => (
+            <SongSuggestion
+              key={`${song.name} ${song.artist}`}
+              isAdmin={isAdmin}
+              name={song.name}
+              id={song.id}
+              artist={song.artist}
+              votes={song.votes}
+              index={index}
+              upVote={upVote}
+              downVote={downVote}
+              deleteSuggestion={deleteSuggestion}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="error_message">
+          <h3>Oops! This event code doesn't seem to be valid.</h3>
+          <Button variant="contained" color="primary" onClick={() => navigate("/home")}>
+            Go Back
+          </Button>
+        </div>
+      )}
 
       <Snackbar
         open={toastOpen}

@@ -12,7 +12,7 @@ function ShowQRCodeButton(props) {
         color: "#4CAF50",
         transform: "scale(1.2)",
       }}
-      onClick={() => navigate("/Demoqueue/code?event_name="+props.eventName)}
+      onClick={() => navigate("/code?event_name="+props.eventName)}
     >
       <QrCodeIcon />
     </IconButton>

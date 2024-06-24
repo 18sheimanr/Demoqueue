@@ -1,13 +1,14 @@
 import datetime
 import json
+import os
 
 from flask import redirect, session, request
 from pip._vendor import requests
 
 from app import app
 
-clientId = "09be4ea5badf462fbe63a505c183c04d"
-clientSecret = "83243ddb2d5c44ebaef3ff58b233982b"
+clientId = os.getenv("SPOTIFY_CLIENT_ID")
+clientSecret = os.getenv("SPOTIFY_CLIENT_SECRET")
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 spotify_base_api = "https://api.spotify.com/v1"
 
@@ -41,7 +42,7 @@ def api_callback():
     code_payload = {
         "grant_type": "authorization_code",
         "code": str(auth_token),
-        "redirect_uri": "http://localhost:8082/spotify_webhook",
+        "redirect_uri": os.getenv("BASE_URL") + "/spotify_webhook",
         'client_id': clientId,
         'client_secret': clientSecret,
     }
@@ -57,7 +58,7 @@ def api_callback():
     session["spotify_refresh_token"] = refresh_token
     session["spotify_token_expires"] = datetime.datetime.now() + datetime.timedelta(seconds=int(expires_in))
 
-    return redirect("http://localhost:3000/create_event")
+    return redirect(os.getenv("FRONTEND_ORIGIN") + "/create_event")
 
 @app.route('/host_spotify_playlists', methods=['GET'])
 def get_user_playlists():

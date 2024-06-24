@@ -10,6 +10,7 @@ function Authenticate() {
   const [signupUsernameInput, setSignupUsernameInput] = useState("");
   const [signupPasswordInput, setSignupPasswordInput] = useState("");
   const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
+  const [errorState, setErrorState] = useState('');
 
   useEffect(() => {
     const requestOptions = {
@@ -20,13 +21,20 @@ function Authenticate() {
         Accept: "application/json",
       },
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
-      .then((res) => res.json())
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/login`, requestOptions)
+      .then((res) => {
+        if (!res.ok && res.status === 400) {
+          return res.json().then((data) => {
+            setErrorState(data.error);
+          });
+        }
+        return res.json();
+      })
       .then((data) => {
         console.log(data);
         if (data.authenticated) {
           data.spotifyAuthorized
-            ? navigate("/Demoqueue/create_event")
+            ? navigate("/create_event")
             : window.location.replace(data.spotifyAuthLink);
         }
       });
@@ -50,7 +58,7 @@ function Authenticate() {
         password: signupPasswordInput,
       }),
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/sign_up`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/sign_up`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -74,7 +82,7 @@ function Authenticate() {
         password: passwordInput,
       }),
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/login`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
@@ -131,6 +139,7 @@ function Authenticate() {
   return (
     <div className="container">
       <h1 className="title">SIGN UP AS AN EVENT HOST.</h1>
+      {errorState && <p className="error">{errorState}</p>}
       {signUpForm}
       <br />
       <h2>OR</h2>

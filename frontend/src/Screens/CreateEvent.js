@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CreateEvent.css";
 import PlaylistCard from "./../Components/PlaylistCard/PlaylistCard";
+import {Box, CircularProgress} from "@material-ui/core";
 
 function CreateEvent() {
   // get list of playlists from API here
   const [selectedPlaylist, setSelectedPlaylist] = useState("");
-  const [hostPlaylists, setHostPlaylists] = useState([
-    { name: "Playlist", id: "xxxxx", image_url: "imgurl" },
-  ]);
+  const [hostPlaylists, setHostPlaylists] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,12 +19,12 @@ function CreateEvent() {
         Accept: "application/json",
       },
     };
-    fetch(`${process.env.BACKEND_BASE_URL}/login`, requestOptions)
+    fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/login`, requestOptions)
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         if (!data.authenticated || !data.spotifyAuthorized) {
-          navigate("/Demoqueue/authenticate");
+          navigate("/authenticate");
         } else {
           getSpotifyPlaylists();
         }
@@ -42,7 +41,7 @@ function CreateEvent() {
       },
     };
     fetch(
-      `${process.env.BACKEND_BASE_URL}/host_spotify_playlists`,
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/host_spotify_playlists`,
       requestOptions
     )
       .then((res) => res.json())
@@ -67,7 +66,7 @@ function CreateEvent() {
       body: JSON.stringify({ playlist_spotify_id: selectedPlaylist }),
     };
     fetch(
-      `${process.env.BACKEND_BASE_URL}/create_event_queue`,
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/create_event_queue`,
       requestOptions
     )
       .then((res) => res.json())
@@ -75,7 +74,7 @@ function CreateEvent() {
         console.log(data);
         if (data.success) {
           localStorage.setItem("admin", true);
-          navigate("/Demoqueue/queue?event_name=" + data.event_name);
+          navigate("/queue?event_name=" + data.event_name);
         }
       });
   }
@@ -83,17 +82,24 @@ function CreateEvent() {
   return (
     <div className="container">
       <h1 className="title">SELECT A PLAYLIST.</h1>
-      <div className="createEvent__playlistCards">
-        {hostPlaylists.map((playlist) => (
-          <PlaylistCard
-            name={playlist.name}
-            playlistArtURL={playlist.image_url}
-            playlistId={playlist.id}
-            onSelect={showConfirmButton}
-            selected={playlist.id === selectedPlaylist}
-          />
-        ))}
-      </div>
+      {hostPlaylists === null ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <div className="createEvent__playlistCards">
+          {hostPlaylists.map((playlist) => (
+            <PlaylistCard
+              key={playlist.id}
+              name={playlist.name}
+              playlistArtURL={playlist.image_url}
+              playlistId={playlist.id}
+              onSelect={showConfirmButton}
+              selected={playlist.id === selectedPlaylist}
+            />
+          ))}
+        </div>
+      )}
       {selectedPlaylist.length > 1 ? (
         <button
           className="createEvent__confirmButton"
