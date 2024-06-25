@@ -1,6 +1,8 @@
-import {Button, Snackbar} from "@material-ui/core";
-import { Alert } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { Button, Snackbar } from "@material-ui/core";
+import { Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import io from "socket.io-client";
 import CurrentlyPlaying from "../Components/CurrentlyPlaying/CurrentlyPlaying";
 import QueueOptions from "../Components/QueueOptions/QueueOptions";
 import SongSuggestion from "../Components/SongSuggestion/SongSuggestion";
@@ -8,18 +10,14 @@ import sortAndReturnNumerically, {
   sortAndReturnAlphabetically,
 } from "../Helpers/sort";
 import "./LiveQueue.css";
-import io from "socket.io-client";
-import axios from "axios";
-import {useNavigate} from "react-router-dom";
 
-let socket = io.connect(`${process.env.REACT_APP_BACKEND_BASE_URL}`);
+const socket = io.connect(`${process.env.REACT_APP_BACKEND_BASE_URL}`);
 
 function LiveQueue() {
   const [currentSong, setCurrentSong] = useState({});
   const [songsInQueue, setSongsInQueue] = useState([]);
   const [songProgress, setSongProgress] = useState(0);
   const [songDuration, setSongDuration] = useState(0);
-  const queueRef = React.useRef(songsInQueue);
   const [isAdmin, setIsAdmin] = useState(
     JSON.parse(localStorage.getItem("admin")) === true || false
   );
@@ -39,34 +37,30 @@ function LiveQueue() {
   let search = window.location.search;
   let params = new URLSearchParams(search);
   let event_name = params.get("event_name");
-
-  const loadPlaylistSongs = () => {
-    const requestOptions = {
+  const requestOptions = {
       method: "GET",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-    };
+  };
+
+  const loadPlaylistSongs = () => {
     fetch(
-      `${process.env.REACT_APP_BACKEND_BASE_URL}/event_songs?event_name=` +
-        event_name,
+      `${process.env.REACT_APP_BACKEND_BASE_URL}/event_songs?event_name=${event_name}`,
       requestOptions
     )
       .then((res) => res.json())
       .then((data) => {
         console.log("Got all songs from API", data.songs);
-        let song_list = [...songsInQueue];
-        data.songs.forEach((song) => {
-          song_list.push({
-            name: song.name,
-            artist: song.artist,
-            id: song.id,
-            votes: song.votes,
-            spotify_id: song.spotify_id,
-          });
-        });
+        const song_list = data.songs.map((song) => ({
+          name: song.name,
+          artist: song.artist,
+          id: song.id,
+          votes: song.votes,
+          spotify_id: song.spotify_id,
+        }));
         sortQueue(song_list);
       })
       .catch((error) => {
@@ -74,14 +68,67 @@ function LiveQueue() {
       });
   };
 
-  const getCurrentlyPlayingSong = async () => {
-    let requestOptions = {
-      method: "GET",
+  const sortQueue = (queue) => {
+    setSongsInQueue(
+      sortedByRank
+        ? sortAndReturnNumerically(queue)
+        : sortAndReturnAlphabetically(queue)
+    );
+  };
+
+  const addSongToQueue = (name, artist, songObject) => {
+    if (
+      songsInQueue.some(
+        (song) => song.name === name && song.artist === artist
+      )
+    ) {
+      handleToastOpen();
+      return;
+    }
+
+    const updatedQueue = [songObject, ...songsInQueue];
+    sortQueue(updatedQueue);
+  };
+
+  const upVote = (index, switchVote) => {
+    const updatedQueue = [...songsInQueue];
+    socket.emit("vote", {
+      song: updatedQueue[index].id,
+      change: switchVote ? 2 : 1,
+    });
+    updatedQueue[index].votes += switchVote ? 2 : 1;
+    sortQueue(updatedQueue);
+  };
+
+  const downVote = (index, switchVote) => {
+    const updatedQueue = [...songsInQueue];
+    socket.emit("vote", {
+      song: updatedQueue[index].id,
+      change: switchVote ? -2 : -1,
+    });
+    updatedQueue[index].votes -= switchVote ? 2 : 1;
+    sortQueue(updatedQueue);
+  };
+
+  const deleteSuggestion = (index) => {
+    const updatedQueue = [...songsInQueue];
+    updatedQueue.splice(index, 1);
+    sortQueue(updatedQueue);
+  };
+
+  const toggleSortType = () => {
+    setSortedByRank(!sortedByRank);
+  };
+
+  const updateCurrentSong = () => {
+    const requestOptions = {
+      method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
+      body: JSON.stringify({ event_name: event_name }),
     };
     fetch(
       `${process.env.REACT_APP_BACKEND_BASE_URL}/currently_playing`,
@@ -91,135 +138,58 @@ function LiveQueue() {
       .then((data) => {
         if (data.no_playback || !data) {
           console.log("no playback or no data");
-          updateCurrentlyPlaying("Please play this playlist from your Spotify account!", "Nothing playing", defaultAlbumArtworkURL);
         } else {
+          setCurrentSong({
+            name: data.item.name,
+            artist: data.item.artists[0].name,
+            albumWorkURL: data.item.album.images[0].url
+          });
           setSongProgress(data.progress_ms / 1000);
           setSongDuration(data.item.duration_ms / 1000);
-          setInterval(() => {
-            setSongProgress((seconds) => seconds + 1);
-          }, 1000);
-          setTimeout(() => {
-            console.log("add to queue");
-            if (isAdmin) {
-              console.log("admin adding song to queue");
-              requestOptions.method = "POST";
-              requestOptions.withCredentials = true;
-              let queue = [...queueRef.current];
-              queue = sortAndReturnNumerically(queue);
-
-              console.log("adding", queue[0]);
-              axios
-                .post(
-                  `${process.env.REACT_APP_BACKEND_BASE_URL}/add_song_to_queue`,
-                  { spotify_uri: queue[0].spotify_id },
-                  requestOptions
-                )
-                .then((res) => console.log(res.data));
-            }
-          }, data.item.duration_ms - data.progress_ms - 30 * 1000);
-          setTimeout(() => {
-            console.log("song ended");
-            window.location.reload();
-          }, data.item.duration_ms - data.progress_ms - 2000);
-          updateCurrentlyPlaying(
-            data.item.name,
-            data.item.artists[0].name,
-            data.item.album.images[0].url
-          );
         }
       })
       .catch((error) => {
-        console.log("Can't load currently playing song", error);
+        console.log("Error getting current song", error);
       });
   };
 
-  const updateCurrentlyPlaying = (name, artist, imageURL) => {
-    setCurrentSong({
-      name: name,
-      artist: artist,
-      albumWorkURL: imageURL,
-    });
-  };
-
-  const sortQueue = (queue) => {
-    if (sortedByRank) {
-      setSongsInQueue(sortAndReturnNumerically(queue));
-    } else {
-      setSongsInQueue(sortAndReturnAlphabetically(queue));
-    }
-  };
-
-  const addSongToQueue = (name, artist, songObject) => {
-    if (
-      songsInQueue.filter(
-        (song) => song.name === name && song.artist === artist
-      ).length > 0
-    ) {
-      handleToastOpen();
-      return;
-    }
-
-    let queueCopy = [...songsInQueue];
-
-    queueCopy.unshift(songObject);
-
-    sortQueue(queueCopy);
-  };
-
-  const upVote = (index, switchVote) => {
-    let queueCopy = [...songsInQueue];
-    socket.emit("vote", {
-      song: queueCopy[index].id,
-      change: switchVote ? 2 : 1,
-    });
-    queueCopy[index].votes += switchVote ? 2 : 1;
-    sortQueue(queueCopy);
-  };
-
-  const downVote = (index, switchVote) => {
-    let queueCopy = [...songsInQueue];
-    socket.emit("vote", {
-      song: queueCopy[index].id,
-      change: switchVote ? -2 : -1,
-    });
-    queueCopy[index].votes -= switchVote ? 2 : 1;
-    sortQueue(queueCopy);
-  };
-
-  const deleteSuggestion = (index) => {
-    let queueCopy = [...songsInQueue];
-    queueCopy.splice(index, 1);
-    sortQueue(queueCopy);
-  };
-
-  const toggleSortType = () => {
-    setSortedByRank(!sortedByRank);
-  };
+  useEffect(() => {
+    const intervalId = setInterval(updateCurrentSong, 1000); // 30000 ms = 30 s
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
-    queueRef.current = songsInQueue;
-  });
+    loadPlaylistSongs();
+
+    socket.on("send_vote", (vote) => {
+      setSongsInQueue((prevQueue) => {
+        const updatedQueue = prevQueue.map((song) =>
+          song.id === vote.song
+            ? { ...song, votes: song.votes + vote.change }
+            : song
+        );
+        return sortQueue(updatedQueue);
+      });
+    });
+
+    return () => {
+      socket.off("send_vote");
+    };
+  }, []);
 
   useEffect(() => {
     sortQueue([...songsInQueue]);
   }, [sortedByRank]);
 
   useEffect(() => {
-    socket.on("send_vote", (vote) => {
-      console.log("useEffect on send vote");
-      let queueCopy = [...queueRef.current];
-      const idx = queueCopy.findIndex((song) => song.id === vote.song);
-      queueCopy[idx].votes += vote.change;
-      sortQueue(queueCopy);
-    });
-    setCurrentSong({
-      name: "",
-      artist: "",
-      albumWorkURL: defaultAlbumArtworkURL,
-    });
-    getCurrentlyPlayingSong();
-    loadPlaylistSongs();
-  }, []);
+    if(!currentSong.name) {
+      setCurrentSong({
+        name: "Spotify playback paused.",
+        artist: "Make sure Spotify is playing.",
+        albumWorkURL: defaultAlbumArtworkURL,
+      });
+    }
+  }, [currentSong.name]);
 
   return (
     <div>

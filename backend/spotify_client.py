@@ -5,7 +5,8 @@ import os
 from flask import redirect, session, request
 from pip._vendor import requests
 
-from app import app
+from app import app, db
+from models import Song, Event
 
 clientId = os.getenv("SPOTIFY_CLIENT_ID")
 clientSecret = os.getenv("SPOTIFY_CLIENT_SECRET")
@@ -108,7 +109,7 @@ def get_playlist_songs(playlist_spotify_id):
 
     return parsed_songs
 
-@app.route('/currently_playing', methods=['GET'])
+@app.route('/currently_playing', methods=['POST'])
 def get_currently_playing_song_status():
     token = session["spotify_token"]
     authorization_header = {"Authorization": "Bearer {}".format(token)}
@@ -118,6 +119,19 @@ def get_currently_playing_song_status():
     if len(players_response.text) <= 1:
         return {"no_playback":True}
     player_data = json.loads(players_response.text)
+    print(player_data['item']['duration_ms'])
+    print(player_data['progress_ms'])
+    if int(player_data['item']['duration_ms']) - int(player_data['progress_ms']) - 3 * 1000 < 0:  # 3 seconds left in the song, queue next one
+        # play next song, ideally store the spotify token to back end and use it to queue the next song without
+        # relying on FE client calling this method
+        event = db.session.query(Event).filter(Event.name == request.json["event_name"]).first()
+        song = db.session.query(Song).filter(Song.event_id == event.id).order_by(Song.rating.desc()).first()
+        if session.get("last_queued_song_id", "") == song.id:
+            return player_data
+
+        session["last_queued_song_id"] = song.id
+        queue_api_endpoint = "{}/me/player/queue?uri={}".format(spotify_base_api, song.spotify_id)
+        requests.post(queue_api_endpoint, headers=authorization_header)
 
     return player_data
 
@@ -130,7 +144,7 @@ def add_song_to_queue():
 
         queue_api_endpoint = "{}/me/player/queue?uri={}".format(spotify_base_api,spotify_uri)        
         requests.post(queue_api_endpoint,headers=authorization_header)
-        return {"res":"Song added successfully"}
+        return {"res": "Song added successfully"}
     except Exception as e:
         print(e)
 

@@ -13,7 +13,7 @@ function SessionCode(props) {
   useEffect(() => {
       const eventURL = `${process.env.REACT_APP_FRONTEND_BASE_URL}/queue?event_name=` + event_name
     setQrCode
- (`http://api.qrserver.com/v1/create-qr-code/?data=${eventURL}!&size=${size}x${size}`);
+ (`http://api.qrserver.com/v1/create-qr-code/?data=${eventURL}&size=${size}x${size}`);
   }, [event_name, size]);
 
   const navigate = useNavigate();
