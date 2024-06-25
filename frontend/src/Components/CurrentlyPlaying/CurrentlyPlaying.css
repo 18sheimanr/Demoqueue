@@ -1,73 +1,68 @@
+.currentlyPlaying__wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .currentlyPlaying__container {
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
-  /* margin-left: 1rem; */
+  padding: 1rem;
+  height: 100px; /* Adjust this value as needed */
 }
 
 .currentlyPlaying__albumwork {
   --image-size: 75px;
-
   width: var(--image-size);
   height: var(--image-size);
   object-fit: cover;
-
   margin-right: 1rem;
-
   border-radius: 100%;
   animation: spin 2s infinite linear;
 }
 
-.currentlyPlaying__albumworkName--container{
+.currentlyPlaying__albumworkName--container {
   display: flex;
   align-items: center;
-  margin-left: 1rem;
-}
-
-.currentlyPlaying__songInfo {
-    /* Styling */
 }
 
 .currentlyPlaying__songInfo--name {
   font-size: 22px;
   font-weight: 500;
+  margin: 0;
 }
 
 .currentlyPlaying__songInfo--artist {
   font-size: 15px;
   font-weight: 500;
   color: rgb(140, 140, 140);
+  margin: 0;
 }
 
-.currentlyPlaying__lockTimer{
+.currentlyPlaying__progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.currentlyPlaying__progressBar--fill {
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: #1DB954; /* Spotify green color */
+  transition: width 0.5s ease-out;
 }
 
 @keyframes spin {
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
 }
-.lockTimer{
-    position:absolute;
-    right:0;
 
-    text-align: center;
-
-    width: 5rem;
-}
-
-.sessionCode{
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
+.sessionCode {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
 }
